@@ -23,6 +23,7 @@ const procedure = [
 ];
 
 const causali = [
+  { id: "", label: "" },
   { id: "511", label: "Attività presales" },
   { id: "316", label: "Attività sistemistica" },
   { id: "312", label: "Bug-Fix Documentazione" },
@@ -76,11 +77,11 @@ function Property({ children: label, value, onModify, onDone }: PropertyProps) {
       <>
         <View style={[t.borderB, t.borderGray300, t.flex1, t.pY1, t.pX1]}>
           {value.id ? (
-            <Text numberOfLines={1} style={[t.textGray800, t.textLg, t.flexShrink, t.flexGrow, t.flex1]}>
+            <Text numberOfLines={1} style={[t.textGray800, t.textLg, t.flexShrink]}>
               {value.id ? value.label : "Empty"}
             </Text>
           ) : (
-            <Text numberOfLines={1} style={[t.textGray500, t.textLg, t.flexShrink, t.flexGrow, t.flex1]}>
+            <Text numberOfLines={1} style={[t.textGray500, t.fontLight, t.textLg, t.flexShrink]}>
               Empty
             </Text>
           )}
@@ -91,10 +92,13 @@ function Property({ children: label, value, onModify, onDone }: PropertyProps) {
   );
 }
 
-type PopOverProps = { onClose?: () => void };
-export default function PopOver({ onClose }: PopOverProps) {
+type PopOverProps = { onClose?: () => void; onSave: (procedura: PropType, causale: PropType, ticket: number, info: string) => void };
+export default function PopOver({ onClose, onSave }: PopOverProps) {
   const [procedura, setProcedura] = useState<PropType>(procedure[0]);
   const [causale, setCausale] = useState<PropType>(causali[0]);
+  const [ticket, setTicket] = useState<number | "">("");
+  const [info, setInfo] = useState("");
+
   const [propList, setPropList] = useState<PropListType>(PropListType.NONE);
 
   let propListData: PropType[] = [];
@@ -124,6 +128,13 @@ export default function PopOver({ onClose }: PopOverProps) {
     }
   };
 
+  const validData = () => {
+    return !!procedura.id && !!causale.id && !!info;
+  };
+  const savePress = () => {
+    onSave(procedura, causale, ticket || 0, info);
+  };
+
   return (
     <View style={[t.absolute, t.left0, t.right0, t.top0, t.bottom0, t.itemsCenter, t.justifyCenter]}>
       <View style={[t.absolute, t.left0, t.right0, t.top0, t.bottom0, t.bgGray400, t.opacity75]}></View>
@@ -143,6 +154,16 @@ export default function PopOver({ onClose }: PopOverProps) {
               style={[t.borderB, t.borderGray400, t.flex1, t.textGray800, t.textLg, t.pY1, t.pX1]}
               keyboardType="numeric"
               maxLength={6}
+              value={ticket.toString()}
+              onChangeText={(val) => setTicket(parseInt(val))}
+            />
+          </PropertyLabel>
+          <PropertyLabel label="Info">
+            <TextInput
+              style={[t.borderB, t.borderGray400, t.flex1, t.textGray800, t.textLg, t.pY1, t.pX1]}
+              maxLength={50}
+              value={info}
+              onChangeText={setInfo}
             />
           </PropertyLabel>
           {propList !== PropListType.NONE ? (
@@ -152,7 +173,9 @@ export default function PopOver({ onClose }: PopOverProps) {
               ))}
             </Picker>
           ) : (
-            <MyButton onPress={() => onClose && onClose()}>Save</MyButton>
+            <MyButton disabled={!validData()} onPress={savePress}>
+              Save
+            </MyButton>
           )}
         </View>
       </View>
