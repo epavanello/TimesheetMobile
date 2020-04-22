@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  SafeAreaView,
-  ScrollView,
-  Picker,
-  Button,
-} from "react-native";
+import { Text, View, SafeAreaView, ScrollView, Picker, Button } from "react-native";
 import { t } from "react-native-tailwindcss";
 import PopOver from "../components/popover";
+import MyButton from "../components/myButton";
 
 interface Plan {
   time: string;
@@ -39,33 +33,21 @@ export default function Plan() {
       </View>
       <ScrollView style={[t.flexShrink]}>
         {plan.map((p, i) => (
-          <View
-            style={[t.flex, t.flexRow, t.wFull, t.borderB, t.borderBlue200]}
-            key={i}
-          >
-            <View
-              style={[
-                t.w16,
-                t.borderR,
-                t.borderBlue200,
-                t.p2,
-                t.flex,
-                t.flexRow,
-                t.justifyEnd,
-              ]}
-            >
+          <View style={[t.flex, t.flexRow, t.wFull, t.borderB, t.borderBlue200]} key={i}>
+            <View style={[t.w16, t.borderR, t.borderBlue200, t.p2, t.flex, t.flexRow, t.justifyEnd]}>
               <Text>{p.time}</Text>
             </View>
             {!p.proc.id && (
               <>
                 <View style={[t.flex1]}></View>
                 <View>
-                  <Button
-                    title={"set"}
+                  <MyButton
                     onPress={() => {
                       setShowPopOver(true);
                     }}
-                  />
+                  >
+                    Set
+                  </MyButton>
                 </View>
               </>
             )}
