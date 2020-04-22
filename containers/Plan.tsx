@@ -1,28 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, SafeAreaView, ScrollView, Picker, Button } from "react-native";
+import { Text, View, SafeAreaView, ScrollView } from "react-native";
 import { t } from "react-native-tailwindcss";
-import PopOver from "../components/popover";
 import MyButton from "../components/myButton";
+import ManageTicket, { ActivityType } from "./manageActivity";
 
 interface Plan {
   time: string;
-  proc: { id: number; label: string };
+  activity?: ActivityType;
 }
 
 export default function Plan() {
-  const [showPopOver, setShowPopOver] = useState(false);
   const [plan, setPlan] = useState<Plan[]>([]);
+  const [timeEdit, setTimeEdit] = useState("");
 
   useEffect(() => {
     const from = 9,
       to = 18;
     const range: Plan[] = [];
     for (let hour = from; hour < to; hour++) {
-      range.push({ time: `${hour}:00`, proc: { id: 0, label: "" } });
-      range.push({ time: `${hour}:30`, proc: { id: 0, label: "" } });
+      range.push({ time: `${hour}:00` });
+      range.push({ time: `${hour}:30` });
     }
     setPlan(range);
   }, []);
+
+  const updateActivity = (timeEdit: string, activity: ActivityType) => {
+    let newPlan = [...plan];
+    let currentActivity = newPlan.find((p) => p.time === timeEdit);
+    if (currentActivity) {
+      currentActivity.activity = activity;
+    }
+    setPlan(newPlan);
+  };
 
   return (
     <SafeAreaView style={[t.hFull, t.flexGrow0, t.flexCol]}>
@@ -37,27 +46,28 @@ export default function Plan() {
             <View style={[t.w16, t.borderR, t.borderBlue200, t.p2, t.flex, t.flexRow, t.justifyEnd]}>
               <Text>{p.time}</Text>
             </View>
-            {!p.proc.id && (
-              <>
-                <View style={[t.flex1]}></View>
-                <View>
-                  <MyButton
-                    onPress={() => {
-                      setShowPopOver(true);
-                    }}
-                  >
-                    Set
-                  </MyButton>
-                </View>
-              </>
-            )}
+            <View style={[t.flex1]}>{p.activity && <Text>{p.activity.procedura.label}</Text>}</View>
+            <View style={[t.flex1]}>{p.activity && <Text>{p.activity.causale.label}</Text>}</View>
+            <View>
+              <MyButton
+                onPress={() => {
+                  setTimeEdit(p.time);
+                }}
+              >
+                Set
+              </MyButton>
+            </View>
           </View>
         ))}
       </ScrollView>
-      {showPopOver && (
-        <PopOver
+      {!!timeEdit && (
+        <ManageTicket
           onClose={() => {
-            setShowPopOver(false);
+            setTimeEdit("");
+          }}
+          onSave={(activity) => {
+            updateActivity(timeEdit, activity);
+            setTimeEdit("");
           }}
         />
       )}
