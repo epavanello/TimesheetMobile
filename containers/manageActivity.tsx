@@ -89,13 +89,17 @@ export interface ActivityType {
   ticket: number;
   info: string;
 }
+export interface PlanType {
+  time: string;
+  activity?: ActivityType;
+}
 
-type ManageActivityProps = { onClose?: () => void; onSave: (activity: ActivityType) => void };
-export default function ManageActivity({ onClose, onSave }: ManageActivityProps) {
-  const [procedura, setProcedura] = useState<PropType>(procedure[0]);
-  const [causale, setCausale] = useState<PropType>(causali[0]);
-  const [ticket, setTicket] = useState<number | "">("");
-  const [info, setInfo] = useState("");
+type ManageActivityProps = { selectedPlan: PlanType; onClose?: () => void; onSave: (activity: ActivityType) => void };
+export default function ManageActivity({ selectedPlan, onClose, onSave }: ManageActivityProps) {
+  const [procedura, setProcedura] = useState<PropType>(selectedPlan.activity?.procedura || procedure[0]);
+  const [causale, setCausale] = useState<PropType>(selectedPlan.activity?.causale || causali[0]);
+  const [ticket, setTicket] = useState<number | "">(selectedPlan.activity?.ticket || "");
+  const [info, setInfo] = useState(selectedPlan.activity?.info || "");
 
   const [propList, setPropList] = useState<PropListType>(PropListType.NONE);
 

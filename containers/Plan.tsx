@@ -2,23 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Text, View, SafeAreaView, ScrollView } from "react-native";
 import { t } from "react-native-tailwindcss";
 import MyButton from "../components/myButton";
-import ManageTicket, { ActivityType } from "./manageActivity";
+import ManageTicket, { ActivityType, PlanType } from "./manageActivity";
 
-interface Plan {
-  time: string;
-  activity?: ActivityType;
-}
 
 export default function Plan() {
-  const [plan, setPlan] = useState<Plan[]>([]);
-  const [timeEdit, setTimeEdit] = useState("");
+  const [plan, setPlan] = useState<PlanType[]>([]);
+  const [planToEdit, setPlanToEdit] = useState<PlanType>();
 
   useEffect(() => {
     const from = 9,
       to = 18;
-    const range: Plan[] = [];
+    const range: PlanType[] = [];
     for (let hour = from; hour < to; hour++) {
-      range.push({ time: `${hour}:00` });
+      range.push({
+        time: `${hour}:00`,
+        activity: {
+          procedura: { id: "1", label: "Euresys cross" },
+          causale: { id: "1", label: "Sviluppo" },
+          ticket: 23445,
+          info: "SAL PRESENZE",
+        },
+      });
       range.push({ time: `${hour}:30` });
     }
     setPlan(range);
@@ -46,12 +50,24 @@ export default function Plan() {
             <View style={[t.w16, t.borderR, t.borderBlue200, t.p2, t.flex, t.flexRow, t.justifyEnd]}>
               <Text>{p.time}</Text>
             </View>
-            <View style={[t.flex1]}>{p.activity && <Text>{p.activity.procedura.label}</Text>}</View>
-            <View style={[t.flex1]}>{p.activity && <Text>{p.activity.causale.label}</Text>}</View>
+            {p.activity ? (
+              <>
+                <View style={[t.flex1, t.pL2, t.flex, t.flexCol, t.justifyCenter, t.itemsStart]}>
+                  <Text style={[t.textXs]}>{p.activity.procedura.label}</Text>
+                  <Text style={[t.textXs]}>{p.activity.causale.label}</Text>
+                </View>
+                <View style={[t.flex1, t.pR2, t.flex, t.flexCol, t.justifyCenter, t.itemsStart]}>
+                  <Text style={[t.textXs]}>{p.activity.ticket || ""}</Text>
+                  <Text style={[t.textXs]}>{p.activity.info}</Text>
+                </View>
+              </>
+            ) : (
+              <View style={[t.flex1]}></View>
+            )}
             <View>
               <MyButton
                 onPress={() => {
-                  setTimeEdit(p.time);
+                  setPlanToEdit(p);
                 }}
               >
                 Set
@@ -60,14 +76,15 @@ export default function Plan() {
           </View>
         ))}
       </ScrollView>
-      {!!timeEdit && (
+      {!!planToEdit && (
         <ManageTicket
+          selectedPlan={planToEdit}
           onClose={() => {
-            setTimeEdit("");
+            setPlanToEdit(undefined);
           }}
-          onSave={(activity) => {
-            updateActivity(timeEdit, activity);
-            setTimeEdit("");
+          onSave={(newActivity) => {
+            updateActivity(planToEdit.time, newActivity);
+            setPlanToEdit(undefined);
           }}
         />
       )}
