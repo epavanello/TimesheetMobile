@@ -80,8 +80,8 @@ export interface PlanType {
   activity?: ActivityType;
 }
 
-type ManageActivityProps = { selectedPlan: PlanType; onClose?: () => void; onSave: (activity: ActivityType) => void };
-export default function ManageActivity({ selectedPlan, onClose, onSave }: ManageActivityProps) {
+type ManageActivityProps = { selectedPlan: PlanType; onClose?: () => void; onChange: (activity?: ActivityType) => void };
+export default function ManageActivity({ selectedPlan, onClose, onChange }: ManageActivityProps) {
   const [procedura, setProcedura] = useState<PropType>(selectedPlan.activity?.procedura || procedure[0]);
   const [causale, setCausale] = useState<PropType>(selectedPlan.activity?.causale || causali[0]);
   const [ticket, setTicket] = useState<number | "">(selectedPlan.activity?.ticket || "");
@@ -120,7 +120,11 @@ export default function ManageActivity({ selectedPlan, onClose, onSave }: Manage
     return !!procedura.id && !!causale.id && !!info;
   };
   const savePress = () => {
-    onSave({ procedura, causale, ticket: ticket || 0, info });
+    onChange({ procedura, causale, ticket: ticket || 0, info });
+  };
+
+  const deletePress = () => {
+    onChange();
   };
 
   return (
@@ -161,9 +165,12 @@ export default function ManageActivity({ selectedPlan, onClose, onSave }: Manage
             <MyButton onPress={() => setPropList(PropListType.NONE)}>Done</MyButton>
           </>
         ) : (
-          <MyButton disabled={!validData()} onPress={savePress}>
-            Save
-          </MyButton>
+          <View style={[t.flex, t.flexRow]}>
+            <MyButton disabled={!validData()} onPress={savePress}>
+              Salva
+            </MyButton>
+            <MyButton warn onPress={deletePress}>Elimina</MyButton>
+          </View>
         )}
       </>
     </PopOver>

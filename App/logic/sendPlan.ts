@@ -1,7 +1,7 @@
 import HTMLParser from "fast-html-parser";
-import { PlanType } from "../../containers/manageActivity";
+import { PlanType } from "../containers/manageActivity";
 import moment from "moment";
-import { getTime, getHours, twoDigit, getMinutes } from "./utilities";
+import { getTime, getHours, twoDigit, getMinutes, getUsername, getPassword } from "../shared/utilities";
 import { getOperatore } from "./settings";
 
 let authenticated = false;
@@ -18,8 +18,8 @@ export const authenticate = async () => {
     .filter((el) => el.attributes["name"] && el.attributes["value"] && el.attributes["type"] == "hidden")
     .map((el) => [el.attributes["name"], el.attributes["value"]]);
 
-  parameters.push(["username", "e.pavanello"]);
-  parameters.push(["password", "M3rcedes!6"]);
+  parameters.push(["username", (await getUsername()) || ""]);
+  parameters.push(["password", (await getPassword()) || ""]);
   parameters.push(["Conferma", "Conferma"]);
 
   const formBody = [];
