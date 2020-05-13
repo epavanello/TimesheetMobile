@@ -14,9 +14,9 @@ export default function PopOver({ onClose, children }: PopOverProps) {
       <View style={[t.absolute, t.left0, t.right0, t.top0, t.bottom0, t.itemsCenter, t.justifyCenter]}>
         <View style={[t.absolute, t.left0, t.right0, t.top0, t.bottom0, t.bgBlue200, t.opacity75]}></View>
         <View style={[t.p4, t.wFull]}>
-          <KeyboardAvoidingView behavior="height">
+          <KeyboardAvoidingView behavior="padding">
             <View style={[t.bgWhite, t.wFull, t.p6, t.roundedLg, t.itemsCenter, t.pT12]}>
-              <TouchableOpacity style={[t.absolute, t.right0, t.top0, t.mR4, t.mT4]} onPress={onClose}>
+              <TouchableOpacity style={[t.absolute, t.right0, t.top0, t.mR2, t.mT2, t.p2]} onPress={onClose}>
                 <FontAwesomeIcon icon={["fas", "times-circle"]} size={20} />
               </TouchableOpacity>
               {children}

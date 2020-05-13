@@ -1,12 +1,18 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect } from "react";
+import { View } from "react-native";
+
+import moment from "moment";
+import "moment/locale/it";
+moment.locale("it");
+moment.locale();
+
 import Plan from "./containers/Plan";
 import { t } from "react-native-tailwindcss";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { faTimesCircle, faArrowLeft, faArrowRight, faUpload } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faTimesCircle);
+library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload);
 
 export default function App() {
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Picker } from "react-native";
+import { View, Text, TextInput, Picker, TouchableOpacity } from "react-native";
 import { t } from "react-native-tailwindcss";
 import PopOver from "../components/popOver";
 import { PropertyLabel } from "../components/propertyLabel";
@@ -50,35 +50,21 @@ enum PropListType {
   CAUSALE,
 }
 
-type PropertyProps = { children: string; value: PropType; onModify: () => void; onDone: () => void };
-function Property({ children: label, value, onModify, onDone }: PropertyProps) {
-  const [modify, setModify] = useState(false);
-
-  const onEditDonePress = () => {
-    if (modify) {
-      onDone();
-    } else {
-      onModify();
-    }
-    setModify(!modify);
-  };
-
+type PropertyProps = { children: string; value: PropType; onModify: () => void };
+function Property({ children: label, value, onModify }: PropertyProps) {
   return (
     <PropertyLabel label={label}>
-      <>
-        <View style={[t.borderB, t.borderGray300, t.flex1, t.pY1, t.pX1]}>
-          {value.id ? (
-            <Text numberOfLines={1} style={[t.textGray800, t.textSm, t.flexShrink]}>
-              {value.id ? value.label : "Empty"}
-            </Text>
-          ) : (
-            <Text numberOfLines={1} style={[t.textGray500, t.fontLight, t.textSm, t.flexShrink]}>
-              Empty
-            </Text>
-          )}
-        </View>
-        <MyButton onPress={() => onEditDonePress()}>{modify ? "Done" : value ? "Edit" : "Set"}</MyButton>
-      </>
+      <TouchableOpacity onPress={onModify} style={[t.borderB, t.borderGray300, t.flex1, t.pY1, t.pX1]}>
+        {value.id ? (
+          <Text numberOfLines={1} style={[t.textGray800, t.textSm, t.flexShrink]}>
+            {value.id ? value.label : "Empty"}
+          </Text>
+        ) : (
+          <Text numberOfLines={1} style={[t.textGray500, t.fontLight, t.textSm, t.flexShrink]}>
+            Empty
+          </Text>
+        )}
+      </TouchableOpacity>
     </PropertyLabel>
   );
 }
@@ -90,7 +76,7 @@ export interface ActivityType {
   info: string;
 }
 export interface PlanType {
-  time: string;
+  index: number;
   activity?: ActivityType;
 }
 
@@ -140,35 +126,40 @@ export default function ManageActivity({ selectedPlan, onClose, onSave }: Manage
   return (
     <PopOver onClose={onClose}>
       <>
-        <Property value={procedura} onDone={() => setPropList(PropListType.NONE)} onModify={() => setPropList(PropListType.PROCEDURA)}>
+        <Property value={procedura} onModify={() => setPropList(PropListType.PROCEDURA)}>
           Procedura
         </Property>
-        <Property value={causale} onDone={() => setPropList(PropListType.NONE)} onModify={() => setPropList(PropListType.CAUSALE)}>
+        <Property value={causale} onModify={() => setPropList(PropListType.CAUSALE)}>
           Causale
         </Property>
         <PropertyLabel label="Ticket">
           <TextInput
-            style={[t.borderB, t.borderGray400, t.flex1, t.textGray800, t.textLg, t.pY1, t.pX1]}
+            style={[t.borderB, t.borderGray300, t.flex1, t.textGray800, t.textSm, t.pY1, t.pX1]}
             keyboardType="numeric"
             maxLength={6}
             value={ticket.toString()}
-            onChangeText={(val) => setTicket(parseInt(val))}
+            onChangeText={(val) => setTicket(parseInt(val) || "")}
+            onFocus={() => setPropList(PropListType.NONE)}
           />
         </PropertyLabel>
         <PropertyLabel label="Info">
           <TextInput
-            style={[t.borderB, t.borderGray400, t.flex1, t.textGray800, t.textLg, t.pY1, t.pX1]}
+            style={[t.borderB, t.borderGray300, t.flex1, t.textGray800, t.textSm, t.pY1, t.pX1]}
             maxLength={50}
             value={info}
             onChangeText={setInfo}
+            onFocus={() => setPropList(PropListType.NONE)}
           />
         </PropertyLabel>
         {propList !== PropListType.NONE ? (
-          <Picker style={[t.wFull, t.bgGray100]} selectedValue={data.id} onValueChange={(val) => setProp(val)}>
-            {propListData.map((prop) => (
-              <Picker.Item key={prop.id} label={prop.label} value={prop.id} />
-            ))}
-          </Picker>
+          <>
+            <Picker style={[t.wFull, t.bgGray100, t.mB4]} selectedValue={data.id} onValueChange={(val) => setProp(val)}>
+              {propListData.map((prop) => (
+                <Picker.Item key={prop.id} label={prop.label} value={prop.id} />
+              ))}
+            </Picker>
+            <MyButton onPress={() => setPropList(PropListType.NONE)}>Done</MyButton>
+          </>
         ) : (
           <MyButton disabled={!validData()} onPress={savePress}>
             Save
