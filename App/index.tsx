@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, Text } from "react-native";
 
 import moment from "moment";
 import "moment/locale/it";

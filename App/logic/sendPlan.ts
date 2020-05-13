@@ -99,12 +99,16 @@ const sendPlan = async (plan: PlanType[], day: Date, stepCents: number) => {
     await authenticate();
   }
   let lastIndxChange = -1;
+
+  let offsetCounter = 0;
+
   for (let i = 0; i < plan.length; i++) {
     const step = plan[i];
     if (step.activity) {
       if (lastIndxChange >= 0) {
         const indexOffset = step.index - lastIndxChange;
         createVoucher(plan[lastIndxChange], day, getHours(indexOffset, stepCents), getMinutes(indexOffset, stepCents));
+        offsetCounter += indexOffset;
       }
       lastIndxChange = i;
     }
@@ -112,7 +116,10 @@ const sendPlan = async (plan: PlanType[], day: Date, stepCents: number) => {
   if (lastIndxChange >= 0 && lastIndxChange != plan.length - 1) {
     const indexOffset = plan.length - lastIndxChange;
     createVoucher(plan[lastIndxChange], day, getHours(indexOffset, stepCents), getMinutes(indexOffset, stepCents));
+    offsetCounter += indexOffset;
   }
+
+  return offsetCounter;
 };
 
 export default sendPlan;

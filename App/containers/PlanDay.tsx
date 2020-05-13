@@ -12,8 +12,9 @@ type PlanDayProps = {
   breakStart: number;
   breakEnd: number;
   stepCents: number;
+  updatePlan: (plan: PlanType[]) => void;
 };
-export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, stepCents }: PlanDayProps) {
+export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, stepCents, updatePlan }: PlanDayProps) {
   const [plan, setPlan] = useState<PlanType[]>([]);
   const [planToEdit, setPlanToEdit] = useState<PlanType>();
 
@@ -39,6 +40,7 @@ export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, ste
       currentActivity.activity = activity;
     }
     setPlan(newPlan);
+    updatePlan(newPlan);
   };
 
   const isBreak = (index: number) => {

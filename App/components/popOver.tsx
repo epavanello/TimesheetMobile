@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { View, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { t } from "react-native-tailwindcss";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import Icon from "./Icon";
 
 type PopOverProps = { onClose?: () => void; children: ReactElement };
 export default function PopOver({ onClose, children }: PopOverProps) {
@@ -16,9 +16,7 @@ export default function PopOver({ onClose, children }: PopOverProps) {
         <View style={[t.p4, t.wFull]}>
           <KeyboardAvoidingView behavior="padding">
             <View style={[t.bgWhite, t.wFull, t.p6, t.roundedLg, t.itemsCenter, t.pT12]}>
-              <TouchableOpacity style={[t.absolute, t.right0, t.top0, t.mR2, t.mT2, t.p2]} onPress={onClose}>
-                <FontAwesomeIcon icon={["fas", "times-circle"]} size={20} />
-              </TouchableOpacity>
+              <Icon icon={["fas", "times-circle"]} style={[t.absolute, t.right0, t.top0, t.mR2, t.mT2]} onPress={onClose} />
               {children}
             </View>
           </KeyboardAvoidingView>

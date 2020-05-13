@@ -1,6 +1,5 @@
 import React, { useState, useEffect, ReactElement } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { t } from "react-native-tailwindcss";
 
 type HeaderProps = {

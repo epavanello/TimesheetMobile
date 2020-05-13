@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, TouchableOpacity, TextInput, View, AsyncStorage } from "react-native";
+import { SafeAreaView, TextInput, View } from "react-native";
 import { t } from "react-native-tailwindcss";
 
 import { Page } from "../shared/models";
 import Header from "../components/Header";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { PropertyLabel } from "../components/propertyLabel";
 import { getOperatore, getUsername, getPassword, setOperatore, setUsername, setPassword } from "../shared/utilities";
+import Icon from "../components/Icon";
 
 type ProfileProps = {
   onPageChange: (page: Page) => void;
@@ -36,16 +36,8 @@ export default function Profile({ onPageChange }: ProfileProps) {
   return (
     <SafeAreaView style={[t.hFull, t.flexGrow0, t.flexCol]}>
       <Header
-        left={
-          <TouchableOpacity style={[t.p2, t.mX2, t.absolute, t.left0]} onPress={returnToPlan}>
-            <FontAwesomeIcon style={[t.textBlue800]} icon={["fas", "angle-left"]} />
-          </TouchableOpacity>
-        }
-        right={
-          <TouchableOpacity style={[t.p2, t.mX2, t.absolute, t.right0]} onPress={save}>
-            <FontAwesomeIcon style={[t.textBlue800]} icon={["fas", "save"]} />
-          </TouchableOpacity>
-        }
+        left={<Icon icon={["fas", "angle-left"]} style={[t.absolute, t.left0, t.mX2]} onPress={returnToPlan} />}
+        right={<Icon icon={["fas", "save"]} style={[t.absolute, t.right0, t.mX2]} onPress={save} />}
       />
       <View style={[t.flex, t.flexCol, t.p4]}>
         <PropertyLabel label="Operatore">
