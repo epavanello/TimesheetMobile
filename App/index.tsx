@@ -19,11 +19,12 @@ import {
   faAngleLeft,
   faSave,
   faHistory,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { Page } from "./shared/models";
 import Profile from "./containers/Profile";
 
-library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave, faHistory);
+library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave, faHistory, faCheckCircle);
 
 export default function App() {
   const [page, setPage] = useState<Page>(Page.Plan);

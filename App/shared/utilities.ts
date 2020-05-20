@@ -85,4 +85,13 @@ export const getLastUniquesActivities = async () => {
 export const setDayPlan = async (day: Date, plan: PlanType[]) => {
   lastActivitiesCache = [];
   await AsyncStorage.setItem(moment(day).format("YYYY-MM-DD"), JSON.stringify(plan));
+  await AsyncStorage.setItem(`sync-${moment(day).format("YYYY-MM-DD")}`, "");
+};
+
+export const setLastSyncDay = async (day: Date) => {
+  await AsyncStorage.setItem(`sync-${moment(day).format("YYYY-MM-DD")}`, "sync");
+};
+
+export const checkSyncOk = async (day: Date) => {
+  return (await AsyncStorage.getItem(`sync-${moment(day).format("YYYY-MM-DD")}`)) == "sync";
 };
