@@ -1,4 +1,6 @@
 import { AsyncStorage } from "react-native";
+import moment from "moment";
+import { PlanType, ActivityType } from "../containers/manageActivity";
 
 export const twoDigit = (n: number) => (n > 9 ? "" + n : "0" + n);
 
@@ -30,3 +32,57 @@ export const setUsername = async (username: string) => await AsyncStorage.setIte
 
 export const getPassword = async () => await AsyncStorage.getItem("password");
 export const setPassword = async (password: string) => await AsyncStorage.setItem("password", password);
+
+export const getDayPlan = async (day: Date): Promise<PlanType[]> => {
+  let jsonValue;
+  try {
+    jsonValue = await AsyncStorage.getItem(moment(day).format("YYYY-MM-DD"));
+  } catch {}
+  if (jsonValue != null) {
+    return JSON.parse(jsonValue);
+  } else {
+    return [];
+  }
+};
+
+let lastActivitiesCache: ActivityType[] = [];
+
+export const getLastUniquesActivities = async () => {
+  if (lastActivitiesCache.length > 0) return lastActivitiesCache;
+  const from = moment();
+  const to = moment(from).subtract(60, "days");
+  const promises: Promise<PlanType[]>[] = [];
+
+  for (let dayCursor = from; dayCursor.isSameOrAfter(to); dayCursor.subtract(1, "day")) {
+    promises.push(getDayPlan(dayCursor.toDate()));
+  }
+
+  const plans = await Promise.all(promises);
+  const activities = plans
+    .flat()
+    // Remove empty activities
+    .filter((p) => !!p.activity)
+    .map((p) => p.activity) as ActivityType[];
+
+  lastActivitiesCache = activities.reduce((uniqueActivites: ActivityType[], current) => {
+    if (
+      !uniqueActivites.some((x) => {
+        return (
+          x.procedura.id == current.procedura.id &&
+          x.causale.id == current.causale.id &&
+          x.ticket == current.ticket &&
+          x.info == current.info
+        );
+      })
+    ) {
+      uniqueActivites.push(current);
+    }
+    return uniqueActivites;
+  }, []);
+  return lastActivitiesCache;
+};
+
+export const setDayPlan = async (day: Date, plan: PlanType[]) => {
+  lastActivitiesCache = [];
+  await AsyncStorage.setItem(moment(day).format("YYYY-MM-DD"), JSON.stringify(plan));
+};

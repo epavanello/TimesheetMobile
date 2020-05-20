@@ -1,8 +1,7 @@
 import HTMLParser from "fast-html-parser";
 import { PlanType } from "../containers/manageActivity";
 import moment from "moment";
-import { getTime, getHours, twoDigit, getMinutes, getUsername, getPassword } from "../shared/utilities";
-import { getOperatore } from "./settings";
+import { getTime, getHours, twoDigit, getMinutes, getUsername, getPassword, getOperatore } from "../shared/utilities";
 
 let authenticated = false;
 
@@ -49,7 +48,7 @@ const createVoucher = async (voucher: PlanType, day: Date, ore: number, minuti: 
   const parameters: string[][] = [];
   const date = moment(day).format("DD/MM/YYYY");
 
-  const operatore = getOperatore();
+  const operatore = await getOperatore() || "";
 
   parameters.push(["__EVENTTARGET", "BottomBar1$Btn_Registra"]);
   parameters.push([

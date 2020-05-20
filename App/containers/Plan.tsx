@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, SafeAreaView, ScrollView, TouchableOpacity, AsyncStorage, Alert } from "react-native";
+import { Text, View, SafeAreaView, Alert } from "react-native";
 import { t } from "react-native-tailwindcss";
 import { PlanType } from "./manageActivity";
 import moment from "moment";
@@ -8,7 +8,10 @@ import sendPlan from "../logic/sendPlan";
 import { Page } from "../shared/models";
 import Header from "../components/Header";
 import Icon from "../components/Icon";
-import { getHours, getMinutes, twoDigit } from "../shared/utilities";
+import { getHours, getMinutes, twoDigit, getDayPlan, setDayPlan } from "../shared/utilities";
+
+import { HistoryActivities } from "./historyActivities";
+import PopOver from "../components/popOver";
 
 type PlanProps = {
   onPageChange: (page: Page) => void;
@@ -19,7 +22,7 @@ export default function Plan({ onPageChange }: PlanProps) {
   const stepCents = 50;
 
   const savePlan = async (day: Date, plan: PlanType[]) => {
-    await AsyncStorage.setItem(moment(day).format("YYYY-MM-DD"), JSON.stringify(plan));
+    await setDayPlan(day, plan);
   };
 
   const changeDay = async (newDay: Date) => {
@@ -27,17 +30,7 @@ export default function Plan({ onPageChange }: PlanProps) {
   };
 
   useEffect(() => {
-    (async () => {
-      let jsonValue;
-      try {
-        jsonValue = await AsyncStorage.getItem(moment(day).format("YYYY-MM-DD"));
-      } catch {}
-      if (jsonValue != null) {
-        setCurrentPlan(JSON.parse(jsonValue));
-      } else {
-        setCurrentPlan([]);
-      }
-    })();
+    getDayPlan(day).then(setCurrentPlan);
   }, [day]);
 
   const sendCurrentPlan = async () => {
@@ -51,7 +44,7 @@ export default function Plan({ onPageChange }: PlanProps) {
   };
 
   return (
-    <SafeAreaView style={[t.hFull, t.flexGrow0, t.flexCol]}>
+    <SafeAreaView style={[t.flex, t.hFull, t.flexGrow0, t.flexCol]}>
       <Header
         left={
           <Icon
@@ -71,7 +64,7 @@ export default function Plan({ onPageChange }: PlanProps) {
             changeDay(moment(day).add(-1, "day").toDate());
           }}
         />
-        <Text style={[t.textBlue800, t.fontSemibold, t.mX2]}>{moment(day).format("LL")}</Text>
+        <Text style={[t.textBlue800, t.fontSemibold, t.mX2]}>{moment(day).format("ddd D MMMM YYYY")}</Text>
         <Icon
           icon={["fas", "arrow-right"]}
           onPress={() => {

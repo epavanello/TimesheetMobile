@@ -10,11 +10,20 @@ import Plan from "./containers/Plan";
 import { t } from "react-native-tailwindcss";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimesCircle,
+  faArrowLeft,
+  faArrowRight,
+  faUpload,
+  faUser,
+  faAngleLeft,
+  faSave,
+  faHistory,
+} from "@fortawesome/free-solid-svg-icons";
 import { Page } from "./shared/models";
 import Profile from "./containers/Profile";
 
-library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave);
+library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave, faHistory);
 
 export default function App() {
   const [page, setPage] = useState<Page>(Page.Plan);

@@ -25,7 +25,7 @@ export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, ste
   const [plan, setPlan] = useState<PlanType[]>([]);
   const [planToEdit, setPlanToEdit] = useState<PlanType>();
 
-  const [rowHeight, setRowHeight] = useState(80);
+  const [rowHeight, setRowHeight] = useState(45);
 
   useEffect(() => {
     const fixedPlan = [];

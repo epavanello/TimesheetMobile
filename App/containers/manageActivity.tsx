@@ -4,6 +4,8 @@ import { t } from "react-native-tailwindcss";
 import PopOver from "../components/popOver";
 import { PropertyLabel } from "../components/propertyLabel";
 import MyButton from "../components/myButton";
+import { HistoryActivities } from "./historyActivities";
+import Icon from "../components/Icon";
 
 interface PropType {
   id: string;
@@ -86,6 +88,7 @@ export default function ManageActivity({ selectedPlan, onClose, onChange }: Mana
   const [causale, setCausale] = useState<PropType>(selectedPlan.activity?.causale || causali[0]);
   const [ticket, setTicket] = useState<number | "">(selectedPlan.activity?.ticket || "");
   const [info, setInfo] = useState(selectedPlan.activity?.info || "");
+  const [loadPreset, setLoadPreset] = useState(false);
 
   const [propList, setPropList] = useState<PropListType>(PropListType.NONE);
 
@@ -127,52 +130,75 @@ export default function ManageActivity({ selectedPlan, onClose, onChange }: Mana
     onChange();
   };
 
+  const loadPresetClick = () => {
+    setLoadPreset(true);
+  };
+
+  const setActivity = (activity: ActivityType) => {
+    setProcedura(activity.procedura);
+    setCausale(activity.causale);
+    setTicket(activity.ticket);
+    setInfo(activity.info);
+    setLoadPreset(false);
+  };
+
   return (
-    <PopOver onClose={onClose}>
-      <>
-        <Property value={procedura} onModify={() => setPropList(PropListType.PROCEDURA)}>
-          Procedura
-        </Property>
-        <Property value={causale} onModify={() => setPropList(PropListType.CAUSALE)}>
-          Causale
-        </Property>
-        <PropertyLabel label="Ticket">
-          <TextInput
-            style={[t.borderB, t.borderGray300, t.flex1, t.textGray800, t.textSm, t.pY1, t.pX1]}
-            keyboardType="numeric"
-            maxLength={6}
-            value={ticket.toString()}
-            onChangeText={(val) => setTicket(parseInt(val) || "")}
-            onFocus={() => setPropList(PropListType.NONE)}
-          />
-        </PropertyLabel>
-        <PropertyLabel label="Info">
-          <TextInput
-            style={[t.borderB, t.borderGray300, t.flex1, t.textGray800, t.textSm, t.pY1, t.pX1]}
-            maxLength={50}
-            value={info}
-            onChangeText={setInfo}
-            onFocus={() => setPropList(PropListType.NONE)}
-          />
-        </PropertyLabel>
-        {propList !== PropListType.NONE ? (
-          <>
-            <Picker style={[t.wFull, t.bgGray100, t.mB4]} selectedValue={data.id} onValueChange={(val) => setProp(val)}>
-              {propListData.map((prop) => (
-                <Picker.Item key={prop.id} label={prop.label} value={prop.id} />
-              ))}
-            </Picker>
-            <MyButton onPress={() => setPropList(PropListType.NONE)}>Done</MyButton>
-          </>
-        ) : (
-          <View style={[t.flex, t.flexRow]}>
-            <MyButton disabled={!validData()} onPress={savePress}>
-              Salva
-            </MyButton>
-            <MyButton warn onPress={deletePress}>Elimina</MyButton>
-          </View>
-        )}
-      </>
-    </PopOver>
+    <>
+      <PopOver manageKeyboard onClose={onClose}>
+        <>
+          <Icon icon={["fas", "history"]} style={[t.absolute, t.left0, t.top0, t.mL2, t.mT2]} onPress={loadPresetClick} />
+          <Property value={procedura} onModify={() => setPropList(PropListType.PROCEDURA)}>
+            Procedura
+          </Property>
+          <Property value={causale} onModify={() => setPropList(PropListType.CAUSALE)}>
+            Causale
+          </Property>
+          <PropertyLabel label="Ticket">
+            <TextInput
+              style={[t.borderB, t.borderGray300, t.flex1, t.textGray800, t.textSm, t.pY1, t.pX1]}
+              keyboardType="numeric"
+              maxLength={6}
+              value={ticket.toString()}
+              onChangeText={(val) => setTicket(parseInt(val) || "")}
+              onFocus={() => setPropList(PropListType.NONE)}
+            />
+          </PropertyLabel>
+          <PropertyLabel label="Info">
+            <TextInput
+              style={[t.borderB, t.borderGray300, t.flex1, t.textGray800, t.textSm, t.pY1, t.pX1]}
+              maxLength={50}
+              value={info}
+              onChangeText={setInfo}
+              onFocus={() => setPropList(PropListType.NONE)}
+            />
+          </PropertyLabel>
+          {propList !== PropListType.NONE ? (
+            <>
+              <Picker style={[t.wFull, t.bgGray100, t.mB4]} selectedValue={data.id} onValueChange={(val) => setProp(val)}>
+                {propListData.map((prop) => (
+                  <Picker.Item key={prop.id} label={prop.label} value={prop.id} />
+                ))}
+              </Picker>
+              <MyButton onPress={() => setPropList(PropListType.NONE)}>Done</MyButton>
+            </>
+          ) : (
+            <View style={[t.flex, t.flexRow]}>
+              <MyButton disabled={!validData()} onPress={savePress}>
+                Salva
+              </MyButton>
+              <MyButton warn onPress={deletePress}>
+                Elimina
+              </MyButton>
+            </View>
+          )}
+        </>
+      </PopOver>
+
+      {!!loadPreset && (
+        <PopOver onClose={() => setLoadPreset(false)}>
+          <HistoryActivities onSelect={setActivity} />
+        </PopOver>
+      )}
+    </>
   );
 }
