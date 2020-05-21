@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Button } from "react-native";
+import { Notifications } from "expo";
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
 
 import moment from "moment";
 import "moment/locale/it";
@@ -28,6 +31,54 @@ library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleL
 
 export default function App() {
   const [page, setPage] = useState<Page>(Page.Plan);
+
+  const newReminder = async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    await Notifications.createCategoryAsync("dismiss", [
+      { actionId: "dismiss", buttonTitle: "Silenzia fino al prossimo avvio", isDestructive: true, doNotOpenInForeground: true },
+    ]);
+    const reminderID = await Notifications.scheduleLocalNotificationAsync(
+      {
+        title: "Timesheet",
+        body: "Stai ancora lavorando sulla stessa attività?",
+        categoryId: "dismiss",
+      },
+      {
+        time: moment().add("1", "hour").minute(0).toDate().getTime(),
+      }
+    );
+    console.log("Notification", reminderID.toString());
+  };
+
+  useEffect(() => {
+    console.log("Init notifications");
+    (async () => {
+      if (Constants.isDevice) {
+        const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+        let finalStatus = existingStatus;
+        if (existingStatus !== "granted") {
+          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+          finalStatus = status;
+        }
+        if (finalStatus !== "granted") {
+          alert("You need to enable garants for notifications!");
+          return;
+        }
+        Notifications.addListener(async (notification: any) => {
+          if (notification.origin === "selected") {
+            if (notification.actionId == "dismiss") {
+              return;
+            } else {
+              alert("Carica nuovi dati");
+            }
+          }
+          await newReminder();
+        });
+        await newReminder();
+        //
+      }
+    })();
+  }, []);
 
   return (
     <View style={[t.flex, t.hFull, t.flexGrow0, t.flexShrink0, t.flexCol]}>
