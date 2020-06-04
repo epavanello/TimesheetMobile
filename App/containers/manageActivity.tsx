@@ -76,6 +76,7 @@ export interface ActivityType {
   causale: PropType;
   ticket: number;
   info: string;
+  disabled: boolean;
 }
 export interface PlanType {
   index: number;
@@ -123,7 +124,10 @@ export default function ManageActivity({ selectedPlan, onClose, onChange }: Mana
     return !!procedura.id && !!causale.id && !!info;
   };
   const savePress = () => {
-    onChange({ procedura, causale, ticket: ticket || 0, info });
+    onChange({ procedura, causale, ticket: ticket || 0, info, disabled: false });
+  };
+  const spegniPress = () => {
+    onChange({ procedura, causale, ticket: ticket || 0, info, disabled: true });
   };
 
   const deletePress = () => {
@@ -186,6 +190,7 @@ export default function ManageActivity({ selectedPlan, onClose, onChange }: Mana
               <MyButton disabled={!validData()} onPress={savePress}>
                 Salva
               </MyButton>
+              <MyButton onPress={spegniPress}>Spegni</MyButton>
               <MyButton warn onPress={deletePress}>
                 Elimina
               </MyButton>

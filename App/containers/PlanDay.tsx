@@ -98,7 +98,10 @@ export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, ste
                 isCurrentStep(p.index) ? t.bgBlue100 : {},
               ]}
             >
-              <TouchableOpacity style={[t.flex, t.flexRow, t.wFull, { height: rowHeight }]} onPress={() => setPlanToEdit(p)}>
+              <TouchableOpacity
+                style={[t.flex, t.flexRow, t.wFull, { height: rowHeight }, p.activity?.disabled ? t.bgGray200 : t.bgWhite]}
+                onPress={() => setPlanToEdit(p)}
+              >
                 <View style={[t.w16, t.borderR, t.borderBlue200, t.p2, t.flex, t.flexRow, t.justifyEnd]}>
                   <Text>{getTime(p.index, start, stepCents, breakStart, breakEnd)}</Text>
                 </View>

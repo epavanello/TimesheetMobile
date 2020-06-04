@@ -48,7 +48,7 @@ const createVoucher = async (voucher: PlanType, day: Date, ore: number, minuti: 
   const parameters: string[][] = [];
   const date = moment(day).format("DD/MM/YYYY");
 
-  const operatore = await getOperatore() || "";
+  const operatore = (await getOperatore()) || "";
 
   parameters.push(["__EVENTTARGET", "BottomBar1$Btn_Registra"]);
   parameters.push([
@@ -98,24 +98,27 @@ const sendPlan = async (plan: PlanType[], day: Date, stepCents: number) => {
     await authenticate();
   }
   let lastIndxChange = -1;
+  let stepCounter = 0;
 
   let offsetCounter = 0;
 
   for (let i = 0; i < plan.length; i++) {
     const step = plan[i];
+    if (!step.activity?.disabled) {
+      stepCounter++;
+    }
     if (step.activity) {
       if (lastIndxChange >= 0) {
-        const indexOffset = step.index - lastIndxChange;
-        createVoucher(plan[lastIndxChange], day, getHours(indexOffset, stepCents), getMinutes(indexOffset, stepCents));
-        offsetCounter += indexOffset;
+        createVoucher(plan[lastIndxChange], day, getHours(stepCounter, stepCents), getMinutes(stepCounter, stepCents));
+        offsetCounter += stepCounter;
+        stepCounter = 0;
       }
       lastIndxChange = i;
     }
   }
   if (lastIndxChange >= 0 && lastIndxChange != plan.length - 1) {
-    const indexOffset = plan.length - lastIndxChange;
-    createVoucher(plan[lastIndxChange], day, getHours(indexOffset, stepCents), getMinutes(indexOffset, stepCents));
-    offsetCounter += indexOffset;
+    createVoucher(plan[lastIndxChange], day, getHours(stepCounter, stepCents), getMinutes(stepCounter, stepCents));
+    offsetCounter += stepCounter;
   }
 
   return offsetCounter;
