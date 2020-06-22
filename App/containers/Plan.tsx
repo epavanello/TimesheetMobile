@@ -10,7 +10,7 @@ import Header from "../components/Header";
 import Icon from "../components/Icon";
 import { getHours, getMinutes, twoDigit, getDayPlan, setDayPlan, setLastSyncDay, checkSyncOk } from "../shared/utilities";
 
-import { Calendar, CalendarList, Agenda, DateObject } from "react-native-calendars";
+import { Calendar, DateObject } from "react-native-calendars";
 import PopOver from "../components/popOver";
 
 type PlanProps = {
@@ -24,9 +24,10 @@ export default function Plan({ onPageChange }: PlanProps) {
   const [syncDone, setSyncDone] = useState(false);
   const stepCents = 50;
 
-  const savePlan = async (day: Date, plan: PlanType[]) => {
+  const updatePlan = async (day: Date, plan: PlanType[]) => {
     await setDayPlan(day, plan);
     checkSyncOk(day).then(setSyncDone);
+    setCurrentPlan(plan);
   };
 
   const changeDay = async (newDay: Date) => {
@@ -130,7 +131,7 @@ export default function Plan({ onPageChange }: PlanProps) {
         stepCents={stepCents}
         dayPlan={currentPlan}
         updatePlan={(plan) => {
-          savePlan(day, plan);
+          updatePlan(day, plan);
         }}
       />
       {showCalendar && (
