@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "description": "",
+    "description": "A reverse engineered client for TS TeamProject timesheet",
     "githubUrl": "https://github.com/epavanello/TimesheetMobile"
   }
 }
