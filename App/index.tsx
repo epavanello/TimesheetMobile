@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, StatusBar } from "react-native";
 import { Notifications } from "expo";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
@@ -23,11 +23,15 @@ import {
   faSave,
   faHistory,
   faCheckCircle,
+  faHeart,
 } from "@fortawesome/free-solid-svg-icons";
+
+import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons";
+
 import { Page } from "./shared/models";
 import Profile from "./containers/Profile";
 
-library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave, faHistory, faCheckCircle);
+library.add(faTimesCircle, faArrowLeft, faArrowRight, faUpload, faUser, faAngleLeft, faSave, faHistory, faCheckCircle, faHeart, farHeart);
 
 export default function App() {
   const [page, setPage] = useState<Page>(Page.Plan);

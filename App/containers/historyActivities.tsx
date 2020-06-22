@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView } from "react-native";
-import { ActivityType, PlanType } from "./manageActivity";
-import moment from "moment";
-import { getDayPlan, getLastUniquesActivities } from "../shared/utilities";
+import { ActivityType } from "./manageActivity";
+import { getLastUniquesActivities } from "../shared/utilities";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { t } from "react-native-tailwindcss";
 

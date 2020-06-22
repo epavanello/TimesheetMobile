@@ -1,12 +1,13 @@
 import React, { ReactElement } from "react";
 import { View, Text } from "react-native";
 import { t } from "react-native-tailwindcss";
+import { Label } from "./Label";
 
 type PropertyLabelProps = { label: string; children: ReactElement };
 export function PropertyLabel({ label, children }: PropertyLabelProps) {
   return (
     <View style={[t.wFull, t.mB4, t.flex, t.flexRow, t.itemsCenter]}>
-      <Text style={[t.textGray800, t.textLg, t.fontMedium, t.mR2]}>{label}:</Text>
+      <Label>{label + ":"}</Label>
       {children}
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Picker, TouchableOpacity } from "react-native";
 import { t } from "react-native-tailwindcss";
 import PopOver from "../components/popOver";
@@ -6,45 +6,8 @@ import { PropertyLabel } from "../components/propertyLabel";
 import MyButton from "../components/myButton";
 import { HistoryActivities } from "./historyActivities";
 import Icon from "../components/Icon";
-
-interface PropType {
-  id: string;
-  label: string;
-}
-const procedure = [
-  { id: "", label: "" },
-  { id: "1098", label: "Euresys (old)" },
-  { id: "5015", label: "Euresys cross" },
-  { id: "1084", label: "Euresys - HR" },
-  { id: "1085", label: "Euresys - RP" },
-  { id: "1300", label: "Euresys - Pianificazione Turni" },
-  { id: "1301", label: "Euresys - Nota spese" },
-  { id: "1302", label: "Euresys - Controllo Accessi" },
-  { id: "1303", label: "Euresys - Timesheet" },
-  { id: "8203", label: "People App" },
-  { id: "5016", label: "Euresys - Acquisizione timbrature" },
-];
-
-const causali = [
-  { id: "", label: "" },
-  { id: "511", label: "Attività presales" },
-  { id: "316", label: "Attività sistemistica" },
-  { id: "312", label: "Bug-Fix Documentazione" },
-  { id: "311", label: "Bug-Fix Analisi" },
-  { id: "305", label: "bug-fix Sviluppo" },
-  { id: "310", label: "Bug-Fix Test" },
-  { id: "309", label: "Coordinamento" },
-  { id: "505", label: "Corsi in qualità di docente" },
-  { id: "315", label: "Deploy" },
-  { id: "47", label: "Partecipazione corso di formazione" },
-  { id: "304", label: "SWF-Documentazione" },
-  { id: "306", label: "SWF-Riunione aziendale" },
-  { id: "307", label: "SWF-Riunione operativa" },
-  { id: "300", label: "SWF-Analisi" },
-  { id: "303", label: "SWF-Supporto Reparti Assistenza" },
-  { id: "301", label: "SWF-Sviluppo" },
-  { id: "302", label: "SWF-Test" },
-];
+import { getProcedureFavorites, getCausaliFavorites } from "../shared/utilities";
+import { globalProcedure, globalCausali, PropType, emptyProp } from "../shared/models";
 
 enum PropListType {
   NONE,
@@ -85,38 +48,43 @@ export interface PlanType {
 
 type ManageActivityProps = { selectedPlan: PlanType; onClose?: () => void; onChange: (activity?: ActivityType) => void };
 export default function ManageActivity({ selectedPlan, onClose, onChange }: ManageActivityProps) {
-  const [procedura, setProcedura] = useState<PropType>(selectedPlan.activity?.procedura || procedure[0]);
-  const [causale, setCausale] = useState<PropType>(selectedPlan.activity?.causale || causali[0]);
+  const [procedura, setProcedura] = useState<PropType>(selectedPlan.activity?.procedura || emptyProp);
+  const [causale, setCausale] = useState<PropType>(selectedPlan.activity?.causale || emptyProp);
   const [ticket, setTicket] = useState<number | "">(selectedPlan.activity?.ticket || "");
   const [info, setInfo] = useState(selectedPlan.activity?.info || "");
   const [loadPreset, setLoadPreset] = useState(false);
 
   const [propList, setPropList] = useState<PropListType>(PropListType.NONE);
 
-  let propListData: PropType[] = [];
-  let setData: React.Dispatch<React.SetStateAction<PropType>>;
-  let data: PropType = { id: "", label: "" };
-  switch (propList) {
-    case PropListType.PROCEDURA:
-      propListData = procedure;
-      setData = setProcedura;
-      data = procedura;
-      break;
-    case PropListType.CAUSALE:
-      propListData = causali;
-      setData = setCausale;
-      data = causale;
-      break;
-  }
+  const [propListData, setPropListData] = useState<PropType[]>([]);
+
+  const [selectedData, setSelectedData] = useState(emptyProp);
+
+  useEffect(() => {
+    switch (propList) {
+      case PropListType.PROCEDURA:
+        getProcedureFavorites().then(setPropListData);
+        break;
+      case PropListType.CAUSALE:
+        getCausaliFavorites().then(setPropListData);
+        break;
+    }
+  }, [propList]);
 
   const setProp = (propID: string) => {
     switch (propList) {
-      case PropListType.PROCEDURA:
-        setProcedura(procedure.find((p) => p.id == propID) || procedure[0]);
+      case PropListType.PROCEDURA: {
+        const data = globalProcedure.find((p) => p.id == propID) || emptyProp;
+        setSelectedData(data);
+        setProcedura(data);
         break;
-      case PropListType.CAUSALE:
-        setCausale(causali.find((p) => p.id == propID) || procedure[0]);
+      }
+      case PropListType.CAUSALE: {
+        const data = globalCausali.find((p) => p.id == propID) || emptyProp;
+        setSelectedData(data);
+        setCausale(data);
         break;
+      }
     }
   };
 
@@ -178,7 +146,8 @@ export default function ManageActivity({ selectedPlan, onClose, onChange }: Mana
           </PropertyLabel>
           {propList !== PropListType.NONE ? (
             <>
-              <Picker style={[t.wFull, t.bgGray100, t.mB4]} selectedValue={data.id} onValueChange={(val) => setProp(val)}>
+              <Picker style={[t.wFull, t.bgGray100, t.mB4]} selectedValue={selectedData.id} onValueChange={(val) => setProp(val)}>
+                <Picker.Item key={emptyProp.id} label={emptyProp.label} value={emptyProp.id} />
                 {propListData.map((prop) => (
                   <Picker.Item key={prop.id} label={prop.label} value={prop.id} />
                 ))}

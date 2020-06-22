@@ -1,6 +1,7 @@
 import { AsyncStorage } from "react-native";
 import moment from "moment";
 import { PlanType, ActivityType } from "../containers/manageActivity";
+import { globalCausali, globalProcedure, PropType } from "./models";
 
 export const twoDigit = (n: number) => (n > 9 ? "" + n : "0" + n);
 
@@ -94,4 +95,24 @@ export const setLastSyncDay = async (day: Date) => {
 
 export const checkSyncOk = async (day: Date) => {
   return (await AsyncStorage.getItem(`sync-${moment(day).format("YYYY-MM-DD")}`)) == "sync";
+};
+
+export const getCausaliFavorites = async () => {
+  const idsCausali = (await AsyncStorage.getItem("causali"))?.split(",") || [];
+
+  return globalCausali.filter((c) => idsCausali.includes(c.id));
+};
+
+export const setCausaliFavorites = async (causali: PropType[]) => {
+  await AsyncStorage.setItem("causali", causali.map((row) => row.id).join(","));
+};
+
+export const getProcedureFavorites = async () => {
+  const idsProcedure = (await AsyncStorage.getItem("procedure"))?.split(",") || [];
+
+  return globalProcedure.filter((p) => idsProcedure.includes(p.id));
+};
+
+export const setProcedureFavorites = async (procedure: PropType[]) => {
+  await AsyncStorage.setItem("procedure", procedure.map((row) => row.id).join(","));
 };
