@@ -144,6 +144,7 @@ export default function Plan({ onPageChange }: PlanProps) {
             current={day}
             markedDates={markedDates}
             onMonthChange={onCalendarMonthChange}
+            firstDay={1}
             onDayPress={(e) => {
               setDay(new Date(e.timestamp));
               setShowCalendar(false);
