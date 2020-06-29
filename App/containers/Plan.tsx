@@ -130,6 +130,7 @@ export default function Plan({ onPageChange }: PlanProps) {
         breakEnd={14}
         stepCents={stepCents}
         dayPlan={currentPlan}
+        day={day}
         updatePlan={(plan) => {
           updatePlan(day, plan);
         }}

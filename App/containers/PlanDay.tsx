@@ -14,6 +14,7 @@ import {
 
 type PlanDayProps = {
   dayPlan: PlanType[];
+  day: Date;
   start: number;
   end: number;
   breakStart: number;
@@ -21,7 +22,7 @@ type PlanDayProps = {
   stepCents: number;
   updatePlan: (plan: PlanType[]) => void;
 };
-export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, stepCents, updatePlan }: PlanDayProps) {
+export default function PlanDay({ dayPlan, day, start, end, breakStart, breakEnd, stepCents, updatePlan }: PlanDayProps) {
   const [plan, setPlan] = useState<PlanType[]>([]);
   const [planToEdit, setPlanToEdit] = useState<PlanType>();
 
@@ -64,9 +65,12 @@ export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, ste
   };
 
   const isCurrentStep = (index: number) => {
+    const now = moment(Date.now());
+    if (!moment(day).isSame(now, "day")) {
+      return false;
+    }
     const from = moment({ hour: getHours(fixIndex(index), stepCents, start), minute: getMinutes(fixIndex(index), stepCents, start) });
     const to = moment({ hour: getHours(fixIndex(index) + 1, stepCents, start), minute: getMinutes(fixIndex(index) + 1, stepCents, start) });
-    const now = moment(Date.now());
     const result = moment({ hour: now.get("hour"), minute: now.get("minute") }).isBetween(from, to, "minutes");
     return result;
   };
