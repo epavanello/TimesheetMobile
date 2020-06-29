@@ -90,16 +90,17 @@ export default function PlanDay({ dayPlan, start, end, breakStart, breakEnd, ste
           {plan.map((p, i) => (
             <View
               key={i}
-              style={[
-                t.borderB,
-                t.borderBlue200,
-                isBreak(p.index) ? t.borderB2 : {},
-                i == 0 ? { ...t.borderT, ...t.borderBlue200 } : {},
-                isCurrentStep(p.index) ? t.bgBlue100 : {},
-              ]}
+              style={[t.borderB, t.borderBlue200, isBreak(p.index) ? t.borderB2 : {}, i == 0 ? { ...t.borderT, ...t.borderBlue200 } : {}]}
             >
               <TouchableOpacity
-                style={[t.flex, t.flexRow, t.wFull, { height: rowHeight }, p.activity?.disabled ? t.bgGray200 : t.bgWhite]}
+                style={[
+                  t.flex,
+                  t.flexRow,
+                  t.wFull,
+                  { height: rowHeight },
+                  p.activity?.disabled ? t.bgGray200 : t.bgWhite,
+                  isCurrentStep(p.index) ? t.bgBlue100 : {},
+                ]}
                 onPress={() => setPlanToEdit(p)}
               >
                 <View style={[t.w16, t.borderR, t.borderBlue200, t.p2, t.flex, t.flexRow, t.justifyEnd]}>
