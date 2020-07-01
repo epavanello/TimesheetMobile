@@ -37,8 +37,9 @@ export const authenticate = async () => {
     credentials: "same-origin",
     body: formBody.join("&"),
   });
-  if (login.status != 200 || HTMLParser.parse(await login.text()).querySelector("#form_login")) {
-    throw login.statusText + " - Not authenticated";
+  const text = await login.text();
+  if (login.status != 200 || HTMLParser.parse(text).querySelector("#form_login")) {
+    throw `Bad credential or teamportal error (${login.status})`;
   }
 };
 
@@ -49,6 +50,9 @@ const createVoucher = async (voucher: PlanType, day: Date, ore: number, minuti: 
   const date = moment(day).format("DD/MM/YYYY");
 
   const operatore = (await getOperatore()) || "";
+  if (!operatore) {
+    throw `Operatore mancante`;
+  }
 
   parameters.push(["__EVENTTARGET", "BottomBar1$Btn_Registra"]);
   parameters.push([
@@ -104,20 +108,27 @@ const sendPlan = async (plan: PlanType[], day: Date, stepCents: number) => {
 
   for (let i = 0; i < plan.length; i++) {
     const step = plan[i];
+    if (step.activity && !step.activity?.disabled) {
+      // Se c'è un cambio
+      if (lastIndxChange >= 0) {
+        console.log("Creo con index", stepCounter);
+        console.log("ore", getHours(stepCounter, stepCents));
+        console.log("minuti", getMinutes(stepCounter, stepCents));
+        await createVoucher(plan[lastIndxChange], day, getHours(stepCounter, stepCents), getMinutes(stepCounter, stepCents));
+        offsetCounter += stepCounter;
+      }
+      stepCounter = 0;
+      lastIndxChange = i;
+    }
     if (!step.activity?.disabled) {
       stepCounter++;
     }
-    if (step.activity) {
-      if (lastIndxChange >= 0) {
-        createVoucher(plan[lastIndxChange], day, getHours(stepCounter, stepCents), getMinutes(stepCounter, stepCents));
-        offsetCounter += stepCounter;
-        stepCounter = 0;
-      }
-      lastIndxChange = i;
-    }
   }
   if (lastIndxChange >= 0 && lastIndxChange != plan.length - 1) {
-    createVoucher(plan[lastIndxChange], day, getHours(stepCounter, stepCents), getMinutes(stepCounter, stepCents));
+    console.log("Creo con index", stepCounter);
+    console.log("ore", getHours(stepCounter, stepCents));
+    console.log("minuti", getMinutes(stepCounter, stepCents));
+    await createVoucher(plan[lastIndxChange], day, getHours(stepCounter, stepCents), getMinutes(stepCounter, stepCents));
     offsetCounter += stepCounter;
   }
 

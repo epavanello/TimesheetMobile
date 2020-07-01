@@ -41,16 +41,20 @@ export default function Plan({ onPageChange }: PlanProps) {
   }, [day]);
 
   const sendCurrentPlan = async () => {
-    const hoursOffset = await sendPlan(currentPlan, day, stepCents);
-    await setLastSyncDay(day);
-    setSyncDone(true);
-    updateMarkedDates(day);
-    Alert.alert(
-      "Caricamento",
-      `Caricate ${twoDigit(getHours(hoursOffset, stepCents))}:${twoDigit(getMinutes(hoursOffset, stepCents))} ore`,
-      [{ text: "OK" }],
-      { cancelable: false }
-    );
+    try {
+      const hoursOffset = await sendPlan(currentPlan, day, stepCents);
+      await setLastSyncDay(day);
+      setSyncDone(true);
+      updateMarkedDates(day);
+      Alert.alert(
+        "Caricamento",
+        `Caricate ${twoDigit(getHours(hoursOffset, stepCents))}:${twoDigit(getMinutes(hoursOffset, stepCents))} ore`,
+        [{ text: "OK" }],
+        { cancelable: false }
+      );
+    } catch (ex) {
+      Alert.alert("Errore", ex);
+    }
   };
 
   const updateMarkedDates = async (month: Date) => {
