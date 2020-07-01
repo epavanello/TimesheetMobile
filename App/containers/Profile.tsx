@@ -83,7 +83,7 @@ export default function Profile({ onPageChange }: ProfileProps) {
   const renderCausali = (row: PropType) => render(row, causali, toggleCausali);
 
   return (
-    <SafeAreaView style={[t.hFull, t.flexGrow0, t.flexCol]}>
+    <View style={[t.hFull, t.flexGrow0, t.flexCol]}>
       <Header
         left={<Icon icon={["fas", "angle-left"]} style={[t.absolute, t.left0, t.mX2]} onPress={returnToPlan} />}
         right={<Icon icon={["fas", "save"]} style={[t.absolute, t.right0, t.mX2]} onPress={save} />}
@@ -128,6 +128,6 @@ export default function Profile({ onPageChange }: ProfileProps) {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

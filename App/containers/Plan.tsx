@@ -87,7 +87,7 @@ export default function Plan({ onPageChange }: PlanProps) {
   };
 
   return (
-    <SafeAreaView style={[t.flex, t.hFull, t.flexGrow0, t.flexCol]}>
+    <View style={[t.flex, t.hFull, t.flexGrow0, t.flexCol]}>
       <Header
         left={
           <Icon
@@ -157,6 +157,6 @@ export default function Plan({ onPageChange }: PlanProps) {
           />
         </PopOver>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

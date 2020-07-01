@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, StatusBar } from "react-native";
+import { View, Text, Button, StatusBar, SafeAreaView, Platform } from "react-native";
 import { Notifications } from "expo";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
@@ -11,6 +11,7 @@ moment.locale();
 
 import Plan from "./containers/Plan";
 import { t } from "react-native-tailwindcss";
+import { color } from "react-native-tailwindcss";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -85,13 +86,14 @@ export default function App() {
   }, []);
 
   return (
-    <View style={[t.flex, t.hFull, t.flexGrow0, t.flexShrink0, t.flexCol]}>
+    <SafeAreaView style={[t.flex, t.hFull, t.flexGrow0, t.flexShrink0, t.flexCol]}>
+      <StatusBar barStyle="dark-content" backgroundColor={color.blue200} />
       {
         {
           [Page.Plan]: <Plan onPageChange={setPage} />,
           [Page.Profile]: <Profile onPageChange={setPage} />,
         }[page]
       }
-    </View>
+    </SafeAreaView>
   );
 }
